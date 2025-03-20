@@ -1,0 +1,30 @@
+#!/bin/sh
+# MQTT.py 
+from paho.mqtt import client as mqtt #Import the MQTT broker
+import json
+topics=[("RTU10",0)] #Crimson Publish Topic, ("Topic",QOS). 
+# The callback function. It will be triggered when trying to connect to the MQTT broker
+# client is the client instance connected this time
+# userdata is users' information, usually empty. If it is needed, you can set it through user_data_set function.
+# flags save the dictionary of broker response flag.
+# rc is the response code.
+# Generally, we only need to pay attention to whether the response code is 0.
+def on_connect(client, userdata, flags, rc):
+    client.subscribe(topics) #Subscribe to list above
+     if rc == 0:
+        print("Connected success")
+     else:
+        print(f"Connected fail with code {rc}")
+        
+def on_message(client, userdata, msg):
+    # print(f"{msg.topic} {msg.payload}")
+    json_data = msg.payload
+    # Create json file from json_data here
+
+    
+client = mqtt.Client() #define client
+
+client.on_connect = on_connect #run the on_connect function when connecting
+client.on_message = on_message #run the on_message function when broker receives a message
+client.connect("192.168.21.42", 1893, 60) #Define MQTT broker to connect to
+client.loop_forever() #Loop forever
